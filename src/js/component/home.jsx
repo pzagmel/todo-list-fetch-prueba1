@@ -3,17 +3,37 @@ import React, { useState, useEffect } from "react";
 //create your first component
 const Home = () => {
   const [tareas, setTareas] = useState([]);
-  
+
+  function Actualizar() {
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    var raw = JSON.stringify(tareas);
+
+    var requestOptions = {
+      method: "PUT",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow",
+    };
+
+    fetch(
+      "https://assets.breatheco.de/apis/fake/todos/user/pzeta",
+      requestOptions
+    )
+      .then((response) => response.text())
+      .then((result) => console.log(result))
+      .catch((error) => console.log("error", error));
+  }
+
   useEffect(() => {
     fetch("https://assets.breatheco.de/apis/fake/todos/user/pzeta")
       .then((response) => response.json())
       .then((data) => setTareas(data));
   }, []);
-
-  const agregarTarea=(tarea)=>{
-    setTareas([...tareas, tarea]);
-
-  }
+useEffect(()=>{
+  Actualizar();
+}, [tareas]);
   
   return (
     <div className="container">
@@ -24,7 +44,7 @@ const Home = () => {
             placeholder="What needs to be done"
             onKeyPress={(e) => {
               if (e.key === "Enter") {
-                agregarTarea( {label:e.target.value, done:true})
+                setTareas([...tareas, {label: e.target.value, done: false }]);
                 e.target.value = "";
               }
             }}
